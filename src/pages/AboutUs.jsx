@@ -1,78 +1,62 @@
 // src/pages/AboutUs.jsx
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Users, Briefcase, ChevronRight } from 'lucide-react';
 
-const sectionVariant = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-};
-
 /**
- * About Us & Services Page: Details PES's mission, commitment, and dual-focus solutions.
- * Uses a mobile-first, responsive design with clear sections.
+ * About Us & Services Page
+ * Details PES's mission, commitment, and dual-focus solutions (B2C and B2B)
+ * Features integrated solutions for individual professionals and enterprises
  */
 const AboutUs = () => {
     return (
         <div className="py-12 md:py-16">
-            {/* Main Wrapper */}
             <div className="container mx-auto px-4">
 
-                {/* 1. Header & Commitment */}
-                <motion.header
-                    initial="hidden"
-                    animate="visible"
-                    variants={sectionVariant}
-                    className="text-center mb-12 md:mb-16 max-w-4xl mx-auto"
-                >
+                {/* Header & Commitment */}
+                <header className="text-center mb-12 md:mb-16 max-w-4xl mx-auto">
                     <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-4 tracking-tight">
                         About Us & Services: Our Commitment to Pharma Excellence
                     </h1>
                     <p className="text-xl text-slate-600 leading-relaxed font-medium">
                         Driving Professional Excellence and Operational Mastery.
                     </p>
-                </motion.header>
+                </header>
 
-                {/* 2. Mission & Founding */}
-                <motion.section
-                    initial="hidden"
-                    whileInView="visible"
-                    variants={sectionVariant}
-                    viewport={{ once: true, amount: 0.3 }}
-                    className="bg-indigo-50 p-8 md:p-12 rounded-xl mb-12 shadow-inner"
-                >
-                    <h2 className="text-3xl font-bold text-indigo-700 mb-4">Our Mission: Accelerating Talent. Securing Enterprise Growth.</h2>
+                {/* Mission & Founding */}
+                <section className="bg-indigo-50 p-8 md:p-12 rounded-xl mb-12 shadow-inner">
+                    <h2 className="text-3xl font-bold text-indigo-700 mb-4">
+                        Our Mission: Accelerating Talent. Securing Enterprise Growth.
+                    </h2>
                     <p className="text-lg text-slate-700 leading-relaxed mb-4">
-                        PHARMA EMPOWER was established to close the critical skill gap and to provide immediate, actionable support to organizations. Our mission is two-fold: to transform dedicated pharma professionals into industry leaders, and to empower pharma companies to achieve operational excellence, regulatory compliance, and project completion through expert consultancy.
+                        PHARMA EMPOWER was established to close the critical skill gap and to provide immediate,
+                        actionable support to organizations. Our mission is two-fold: to transform dedicated pharma
+                        professionals into industry leaders, and to empower pharma companies to achieve operational
+                        excellence, regulatory compliance, and project completion through expert consultancy.
                     </p>
                     <p className="text-lg text-slate-700 leading-relaxed">
-                        We mobilize veteran expertise, strategic consulting frameworks, and cutting-edge learning platforms to secure your growth trajectory and ensure resilient, compliant operations worldwide.
+                        We mobilize veteran expertise, strategic consulting frameworks, and cutting-edge learning
+                        platforms to secure your growth trajectory and ensure resilient, compliant operations worldwide.
                     </p>
-                </motion.section>
+                </section>
 
-                {/* 3. Integrated Solutions Section */}
+                {/* Integrated Solutions Section */}
                 <section className="mt-16">
                     <h2 className="text-4xl font-extrabold text-slate-900 text-center mb-10 tracking-tight">
                         Our Integrated Solutions
                     </h2>
                     <p className="text-center text-lg text-slate-600 max-w-3xl mx-auto mb-12">
-                        We offer two distinct, yet complementary, solution sets designed to maximize performance at every level of the pharmaceutical ecosystem.
+                        We offer two distinct, yet complementary, solution sets designed to maximize performance at
+                        every level of the pharmaceutical ecosystem.
                     </p>
 
-                    {/* Solution Grid: Mobile (1 column), Desktop (2 columns) */}
+                    {/* Solution Grid */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
                         {/* I. Talent Elevation (B2C) */}
-                        <motion.div
-                            initial="hidden"
-                            whileInView="visible"
-                            variants={sectionVariant}
-                            viewport={{ once: true, amount: 0.2 }}
-                            className="p-8 border-t-4 border-indigo-600 rounded-xl shadow-xl bg-white"
-                        >
+                        <div className="p-8 border-t-4 border-indigo-600 rounded-xl shadow-xl bg-white">
                             <div className="flex items-center mb-4">
                                 <Users className="w-8 h-8 text-indigo-600 mr-3" />
                                 <h3 className="text-2xl font-bold text-slate-800">
@@ -84,15 +68,22 @@ const AboutUs = () => {
                             <ul className="space-y-4 text-slate-700">
                                 <li className="flex items-start">
                                     <ChevronRight className="w-5 h-5 text-green-500 mt-1 flex-shrink-0 mr-2" />
-                                    <span>Customized Career Roadmapping: Translate ambition into tangible strategy.</span>
+                                    <span>
+                                        <strong>Customized Career Roadmapping:</strong> Translate ambition into tangible strategy.
+                                    </span>
                                 </li>
                                 <li className="flex items-start">
                                     <ChevronRight className="w-5 h-5 text-green-500 mt-1 flex-shrink-0 mr-2" />
-                                    <span>Pharma Forums: Validated Peer Intelligence for complex operational dilemmas.</span>
+                                    <span>
+                                        <strong>Pharma Forums:</strong> Validated Peer Intelligence for complex operational dilemmas.
+                                    </span>
                                 </li>
                                 <li className="flex items-start">
                                     <ChevronRight className="w-5 h-5 text-green-500 mt-1 flex-shrink-0 mr-2" />
-                                    <span>Networking & Executive Connect: Secure meaningful access to global leaders through exclusive high-level forums.</span>
+                                    <span>
+                                        <strong>Networking & Executive Connect:</strong> Secure meaningful access to global leaders
+                                        through exclusive high-level forums.
+                                    </span>
                                 </li>
                             </ul>
 
@@ -101,17 +92,10 @@ const AboutUs = () => {
                                     Explore Your Career Ascent
                                 </Button>
                             </Link>
-                        </motion.div>
+                        </div>
 
                         {/* II. Enterprise Solutions (B2B) */}
-                        <motion.div
-                            initial="hidden"
-                            whileInView="visible"
-                            variants={sectionVariant}
-                            viewport={{ once: true, amount: 0.2 }}
-                            transition={{ delay: 0.2, duration: 0.6 }}
-                            className="p-8 border-t-4 border-green-600 rounded-xl shadow-xl bg-white"
-                        >
+                        <div className="p-8 border-t-4 border-green-600 rounded-xl shadow-xl bg-white">
                             <div className="flex items-center mb-4">
                                 <Briefcase className="w-8 h-8 text-green-600 mr-3" />
                                 <h3 className="text-2xl font-bold text-slate-800">
@@ -123,15 +107,24 @@ const AboutUs = () => {
                             <ul className="space-y-4 text-slate-700">
                                 <li className="flex items-start">
                                     <ChevronRight className="w-5 h-5 text-indigo-500 mt-1 flex-shrink-0 mr-2" />
-                                    <span>Regulatory Remediation & Inspection Security: Rapid-response teams to manage and resolve critical findings (483s, Warning Letters).</span>
+                                    <span>
+                                        <strong>Regulatory Remediation & Inspection Security:</strong> Rapid-response teams to
+                                        manage and resolve critical findings (483s, Warning Letters).
+                                    </span>
                                 </li>
                                 <li className="flex items-start">
                                     <ChevronRight className="w-5 h-5 text-indigo-500 mt-1 flex-shrink-0 mr-2" />
-                                    <span>Large-Scale Project Stabilization & Execution: Guarantee compliant execution from facility validation to global technology transfer.</span>
+                                    <span>
+                                        <strong>Large-Scale Project Stabilization & Execution:</strong> Guarantee compliant
+                                        execution from facility validation to global technology transfer.
+                                    </span>
                                 </li>
                                 <li className="flex items-start">
                                     <ChevronRight className="w-5 h-5 text-indigo-500 mt-1 flex-shrink-0 mr-2" />
-                                    <span>Portfolio and Alliance Management: Optimize your investment pipeline for maximum return.</span>
+                                    <span>
+                                        <strong>Portfolio and Alliance Management:</strong> Optimize your investment pipeline
+                                        for maximum return.
+                                    </span>
                                 </li>
                             </ul>
 
@@ -140,7 +133,7 @@ const AboutUs = () => {
                                     Engage a Consultant to Drive Enterprise Change
                                 </Button>
                             </Link>
-                        </motion.div>
+                        </div>
                     </div>
                 </section>
 

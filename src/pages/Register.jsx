@@ -1,19 +1,21 @@
-// src/pages/Login.jsx
+// src/pages/Register.jsx
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema } from '@/lib/authSchemas';
+import { registerSchema } from '@/lib/authSchemas';
 import { Button } from '@/components/ui/button';
-import { Lock, Mail, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { UserPlus, Mail, Eye, EyeOff, Lock, AlertCircle, User } from 'lucide-react';
 
 /**
- * Login Page Component
- * User authentication with React Hook Form and Zod validation
+ * Register Page Component
+ * User registration with React Hook Form and Zod validation
+ * Uses Indigo theme (primary brand color from document)
  */
-const Login = () => {
+const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
 
     const {
@@ -21,29 +23,29 @@ const Login = () => {
         handleSubmit,
         formState: { errors, isSubmitting },
     } = useForm({
-        resolver: zodResolver(loginSchema),
+        resolver: zodResolver(registerSchema),
         mode: 'onBlur',
     });
 
     const onSubmit = async (data) => {
         try {
-            console.log('Login Data:', data);
+            console.log('Register Data:', data);
 
             // Simulate API call
             await new Promise((resolve) => setTimeout(resolve, 1500));
 
             // Replace with actual API call
-            // const response = await loginAPI(data);
+            // const response = await registerAPI(data);
             // if (response.success) {
-            //   localStorage.setItem('token', response.token);
-            //   navigate('/academy');
+            //   alert('Registration successful! Please login.');
+            //   navigate('/login');
             // }
 
-            alert('Login successful! (Demo)');
-            // navigate('/academy');
+            alert('Registration successful! Please login. (Demo)');
+            navigate('/login');
         } catch (error) {
-            console.error('Login error:', error);
-            alert('Invalid credentials. Please try again.');
+            console.error('Registration error:', error);
+            alert('Registration failed. Please try again.');
         }
     };
 
@@ -53,19 +55,44 @@ const Login = () => {
 
                 {/* Header */}
                 <header className="text-center mb-8 max-w-2xl mx-auto">
-                    <Lock className="w-16 h-16 text-indigo-600 mx-auto mb-4" />
+                    <UserPlus className="w-16 h-16 text-indigo-600 mx-auto mb-4" />
                     <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-3 tracking-tight">
-                        Welcome Back
+                        Create Your Account
                     </h1>
                     <p className="text-lg text-slate-600">
-                        Access Pharma Academy, Professional Network, and SkillBoard
+                        Join the global community of pharma professionals
                     </p>
                 </header>
 
-                {/* Login Form */}
+                {/* Register Form */}
                 <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-2xl border-t-4 border-indigo-600">
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
+                        {/* Name Field */}
+                        <div>
+                            <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
+                                Full Name
+                            </label>
+                            <div className="relative">
+                                <User className="absolute left-3 top-2.5 w-5 h-5 text-slate-400" />
+                                <input
+                                    type="text"
+                                    id="name"
+                                    placeholder="John Doe"
+                                    autoComplete="name"
+                                    {...register('name')}
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition ${errors.name ? 'border-red-500' : 'border-slate-300'
+                                        }`}
+                                />
+                            </div>
+                            {errors.name && (
+                                <p className="mt-1 text-sm text-red-600 flex items-center">
+                                    <AlertCircle className="w-4 h-4 mr-1" />
+                                    {errors.name.message}
+                                </p>
+                            )}
+                        </div>
 
                         {/* Email Field */}
                         <div>
@@ -103,7 +130,7 @@ const Login = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     id="password"
                                     placeholder="••••••••"
-                                    autoComplete="current-password"
+                                    autoComplete="new-password"
                                     {...register('password')}
                                     className={`w-full pl-10 pr-12 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition ${errors.password ? 'border-red-500' : 'border-slate-300'
                                         }`}
@@ -122,13 +149,41 @@ const Login = () => {
                                     {errors.password.message}
                                 </p>
                             )}
+                            <p className="mt-1 text-xs text-slate-500">
+                                Must be 8+ characters with uppercase, lowercase, and number
+                            </p>
                         </div>
 
-                        {/* Forgot Password */}
-                        <div className="text-right">
-                            <a href="#" className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
-                                Forgot Password?
-                            </a>
+                        {/* Confirm Password Field */}
+                        <div>
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-1">
+                                Confirm Password
+                            </label>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-2.5 w-5 h-5 text-slate-400" />
+                                <input
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    id="confirmPassword"
+                                    placeholder="••••••••"
+                                    autoComplete="new-password"
+                                    {...register('confirmPassword')}
+                                    className={`w-full pl-10 pr-12 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition ${errors.confirmPassword ? 'border-red-500' : 'border-slate-300'
+                                        }`}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                                >
+                                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                </button>
+                            </div>
+                            {errors.confirmPassword && (
+                                <p className="mt-1 text-sm text-red-600 flex items-center">
+                                    <AlertCircle className="w-4 h-4 mr-1" />
+                                    {errors.confirmPassword.message}
+                                </p>
+                            )}
                         </div>
 
                         {/* Submit Button */}
@@ -143,26 +198,38 @@ const Login = () => {
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Signing In...
+                                    Creating Account...
                                 </span>
                             ) : (
                                 <>
-                                    <Lock className="w-4 h-4 mr-2" />
-                                    Sign In
+                                    <UserPlus className="w-4 h-4 mr-2" />
+                                    Create Account
                                 </>
                             )}
                         </Button>
+
+                        {/* Terms & Privacy */}
+                        <p className="text-xs text-slate-500 text-center">
+                            By signing up, you agree to our{' '}
+                            <a href="#" className="text-indigo-600 hover:text-indigo-700 font-medium">
+                                Terms of Service
+                            </a>{' '}
+                            and{' '}
+                            <a href="#" className="text-indigo-600 hover:text-indigo-700 font-medium">
+                                Privacy Policy
+                            </a>
+                        </p>
                     </form>
 
-                    {/* Link to Register */}
+                    {/* Link to Login */}
                     <div className="mt-6 text-center border-t pt-4">
                         <p className="text-sm text-slate-600">
-                            Don't have an account?
+                            Already have an account?
                             <Link
-                                to="/register"
+                                to="/login"
                                 className="ml-2 text-indigo-600 hover:text-indigo-700 font-semibold"
                             >
-                                Sign Up
+                                Sign In
                             </Link>
                         </p>
                     </div>
@@ -209,39 +276,9 @@ const Login = () => {
 
                 </div>
 
-                {/* Benefits Section */}
-                <div className="mt-12 max-w-4xl mx-auto">
-                    <h3 className="text-2xl font-bold text-slate-900 text-center mb-6">
-                        What You'll Get Access To
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                            <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <Lock className="w-6 h-6 text-indigo-600" />
-                            </div>
-                            <h4 className="font-bold text-slate-800 mb-2">Pharma Academy</h4>
-                            <p className="text-sm text-slate-600">GxP-compliant courses and certifications</p>
-                        </div>
-                        <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <Mail className="w-6 h-6 text-green-600" />
-                            </div>
-                            <h4 className="font-bold text-slate-800 mb-2">Professional Network</h4>
-                            <p className="text-sm text-slate-600">Connect with global pharma experts</p>
-                        </div>
-                        <div className="bg-white p-6 rounded-lg shadow-md text-center">
-                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <Lock className="w-6 h-6 text-red-600" />
-                            </div>
-                            <h4 className="font-bold text-slate-800 mb-2">Skill Board</h4>
-                            <p className="text-sm text-slate-600">Curated jobs and skill development</p>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     );
 };
 
-export default Login;
+export default Register;

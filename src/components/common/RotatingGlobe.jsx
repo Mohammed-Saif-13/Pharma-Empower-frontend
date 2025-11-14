@@ -1,27 +1,25 @@
 // src/components/common/RotatingGlobe.jsx
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Globe } from 'lucide-react';
 
+/**
+ * Rotating Globe Component
+ * Displays a continuously rotating globe icon using pure CSS animation
+ * Used on the Pharma News page to represent global news coverage
+ * 
+ * @param {number} size - Icon size in pixels (default: 64)
+ * @param {string} className - Additional CSS classes
+ */
 const RotatingGlobe = ({ size = 64, className = '' }) => {
     return (
-        <motion.div
-            // Continuous 360-degree rotation animation
-            animate={{ rotate: 360 }}
-            transition={{
-                repeat: Infinity,
-                duration: 20,
-                ease: "linear" // Smooth, constant speed rotation
-            }}
-            className={`flex items-center justify-center ${className}`}
-        >
+        <div className={`inline-block ${className}`}>
             <Globe
-                className="text-indigo-600 drop-shadow-lg"
+                className="text-indigo-600 drop-shadow-lg animate-spin-slow"
                 size={size}
                 strokeWidth={1.5}
             />
-        </motion.div>
+        </div>
     );
 };
 

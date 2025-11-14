@@ -1,96 +1,288 @@
 // src/pages/PharmaNews.jsx
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import RotatingGlobe from '@/components/common/RotatingGlobe';
-import { Button } from '@/components/ui/button';
-import { ExternalLink } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Globe, AlertCircle, CheckCircle, Newspaper, Bookmark } from 'lucide-react';
+import { useNewsAPI } from '@/hooks/useNewsAPI';
+import { NewsCard } from '@/components/news/NewsCard';
+import { NewsFilters } from '@/components/news/NewsFilters';
+import { NewsPagination } from '@/components/news/NewsPagination';
 
-// Sample data (real content will come from an AI feed later)
-const sampleNews = [
-    { id: 1, title: 'USFDA Issues New Guidance on Data Integrity for Cloud-Based Systems', source: 'Fierce Pharma', link: 'https://www.fiercepharma.com/' },
-    { id: 2, title: 'AI in Drug Discovery: Gene Therapy Shows Promising Phase II Results', source: 'BioPharma Dive', link: 'https://www.biopharmadive.com/' },
-    { id: 3, title: 'Regulatory Update: EMA Finalizes Rules for Real-World Evidence Use', source: 'Endpoints News', link: 'https://endpts.com/' },
-    { id: 4, title: 'Manufacturing Shift: Adoption of Continuous Processing in Biologics', source: 'Pharma Manufacturing', link: 'https://www.pharmamanufacturing.com/' },
-    { id: 5, title: 'Clinical Trial Update: Gene Therapy Shows Promising Phase II Results for Oncology.', source: 'Endpoints News', link: 'https://endpts.com/' },
-    { id: 6, title: 'Talent Crisis: Managing the AI Skills Gap in Global R&D Teams', source: 'PharmaVoice', link: 'https://www.pharmavoice.com/' },
-];
-
+/**
+ * Pharma News Page - Complete Modular Version
+ * Features: Pharma-only news, search, filters, pagination, save/share articles
+ */
 const PharmaNews = () => {
+    // API KEY - Replace with your key
+    const NEWS_API_KEY = '785ca99749d141babea1d3fbfb6512d3';
+
+    // Custom hook for pharma news
+    const {
+        news,
+        filteredNews,
+        loading,
+        error,
+        lastUpdated,
+        apiStatus,
+        sources,
+        fetchNews,
+        applyFilters,
+        setupAutoRefresh
+    } = useNewsAPI(NEWS_API_KEY);
+
+    // Local state
+    const [savedArticles, setSavedArticles] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedSources, setSelectedSources] = useState([]);
+    const [dateRange, setDateRange] = useState('all');
+    const [sortBy, setSortBy] = useState('newest');
+    const [showFilters, setShowFilters] = useState(false);
+    const [autoRefresh, setAutoRefresh] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [articlesPerPage, setArticlesPerPage] = useState(9);
+
+    // Apply filters when they change
+    useEffect(() => {
+        applyFilters(searchQuery, selectedSources, dateRange, sortBy);
+        setCurrentPage(1);
+    }, [searchQuery, selectedSources, dateRange, sortBy, news]);
+
+    // Auto-refresh setup
+    useEffect(() => {
+        setupAutoRefresh(autoRefresh);
+    }, [autoRefresh]);
+
+    // Initial fetch
+    useEffect(() => {
+        fetchNews();
+    }, []);
+
+    // Pagination
+    const totalPages = Math.ceil(filteredNews.length / articlesPerPage);
+    const indexOfLastArticle = currentPage * articlesPerPage;
+    const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+    const currentArticles = filteredNews.slice(indexOfFirstArticle, indexOfLastArticle);
+
+    // Handle page change
+    const handlePageChange = (newPage) => {
+        setCurrentPage(newPage);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // Handle articles per page change
+    const handleArticlesPerPageChange = (newCount) => {
+        setArticlesPerPage(newCount);
+        setCurrentPage(1);
+    };
+
+    // Save/Unsave article
+    const toggleSaveArticle = (article) => {
+        setSavedArticles(prev => {
+            const isSaved = prev.some(saved => saved.id === article.id);
+            if (isSaved) {
+                return prev.filter(saved => saved.id !== article.id);
+            } else {
+                return [...prev, { ...article, savedAt: new Date() }];
+            }
+        });
+    };
+
+    const isArticleSaved = (article) => {
+        return savedArticles.some(saved => saved.id === article.id);
+    };
+
+    // Share article
+    const shareArticle = async (article) => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: article.title,
+                    text: article.description,
+                    url: article.url,
+                });
+            } catch (err) {
+                console.log('Share cancelled');
+            }
+        } else {
+            navigator.clipboard.writeText(article.url);
+            alert('Article link copied to clipboard!');
+        }
+    };
+
+    // Format date for saved articles
+    const formatDate = (dateString) => {
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            });
+        } catch {
+            return 'Recent';
+        }
+    };
+
+    // Loading state
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center py-20">
+                        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">Loading Pharma News</h2>
+                        <p className="text-gray-600">Fetching latest pharmaceutical updates...</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="py-8">
-            {/* Wrapper to align content center and provide padding */}
-            <div className="container mx-auto px-4">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                {/* Header Section with Globe Animation */}
-                <div className="flex flex-col items-center text-center mb-12">
-
-                    <RotatingGlobe size={100} className="mb-4" />
-
-                    <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
-                        Pharma Pulse (News)
-                    </h1>
-
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.5 }}
-                        className="text-xl text-indigo-700 font-semibold max-w-3xl mx-auto"
-                    >
+                {/* Header */}
+                <header className="text-center mb-12">
+                    <div className="flex items-center justify-center mb-4">
+                        <Globe className="h-12 w-12 text-indigo-600 mr-3 animate-spin-slow" />
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                            Pharma Pulse (News)
+                        </h1>
+                    </div>
+                    <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto mb-6">
                         The Pulse of Pharma: Essential News for Today's Strategic Decisions to create better tomorrow
-                    </motion.p>
-                </div>
-
-                {/* Intro Text */}
-                <p className="text-lg text-slate-600 text-center max-w-4xl mx-auto mb-16">
-                    Your essential source for mastering the industry. Managers and executives receive high-impact insights on regulatory shifts, R&D breakthroughs, and market strategy to drive career growth and strategic decisions. Our **AI integration** curates the most critical alerts from global sources.
-                </p>
-
-                {/* News Grid (Mobile-First: 1 column, Desktop: 2 columns, Large Desktop: 3 columns) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {sampleNews.map((item, index) => (
-                        <motion.div
-                            key={item.id}
-                            initial={{ opacity: 0, y: 50 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                            viewport={{ once: true, amount: 0.3 }}
-                            className="bg-white p-6 rounded-xl shadow-lg border border-slate-100 flex flex-col justify-between"
-                        >
-                            <h3 className="text-xl font-bold text-slate-800 mb-3 leading-snug">
-                                {item.title}
-                            </h3>
-                            <div className="mt-4 flex items-center justify-between">
-                                {/* News ka resource link yahan se milega */}
-                                <p className="text-sm text-indigo-600 font-medium">
-                                    Source: {item.source}
-                                </p>
-                                <a href={item.link} target="_blank" rel="noopener noreferrer">
-                                    <Button variant="ghost" size="sm" className="text-slate-500 hover:text-indigo-600">
-                                        Details
-                                        <ExternalLink className="w-4 h-4 ml-1" />
-                                    </Button>
-                                </a>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
-
-                {/* CTA for more news/sources (using login/register page as placeholder) */}
-                <div className="text-center mt-16">
-                    <h3 className="text-2xl font-bold text-slate-800 mb-4">
-                        Tier 1 Sources: Daily Essential Reading
-                    </h3>
-                    <p className="text-md text-slate-600 mb-6">
-                        We aggregate news from top global sources like Fierce Pharma, BioPharma Dive, and Endpoints News for high-impact intelligence.
                     </p>
-                    <Link to="/login">
-                        <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-lg">
-                            Access Curated AI-Driven Pulse Feed (Login Required)
-                        </Button>
-                    </Link>
-                </div>
+
+                    <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${apiStatus === 'connected'
+                            ? 'bg-green-100 text-green-800 border border-green-200'
+                            : 'bg-red-100 text-red-800 border border-red-200'
+                        }`}>
+                        {apiStatus === 'connected' ? (
+                            <>
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Live Pharma API Connected
+                            </>
+                        ) : (
+                            <>
+                                <AlertCircle className="w-4 h-4 mr-2" />
+                                API Connection Issue
+                            </>
+                        )}
+                    </div>
+                </header>
+
+                {/* Filters Component */}
+                <NewsFilters
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    sources={sources}
+                    selectedSources={selectedSources}
+                    setSelectedSources={setSelectedSources}
+                    dateRange={dateRange}
+                    setDateRange={setDateRange}
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
+                    showFilters={showFilters}
+                    setShowFilters={setShowFilters}
+                    autoRefresh={autoRefresh}
+                    setAutoRefresh={setAutoRefresh}
+                    onRefresh={fetchNews}
+                    articlesCount={filteredNews.length}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    lastUpdated={lastUpdated}
+                />
+
+                {/* Error Message */}
+                {error && (
+                    <div className="bg-red-50 border border-red-200 rounded-2xl p-6 mb-8">
+                        <div className="flex items-start gap-3">
+                            <AlertCircle className="text-red-500 mt-0.5 flex-shrink-0" />
+                            <div>
+                                <h3 className="text-red-800 font-semibold mb-1">Unable to Load News</h3>
+                                <p className="text-red-600 text-sm">{error}</p>
+                                <button
+                                    onClick={fetchNews}
+                                    className="mt-3 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm"
+                                >
+                                    Try Again
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* News Grid */}
+                {currentArticles.length === 0 && !loading ? (
+                    <div className="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-200">
+                        <Newspaper className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">No News Found</h3>
+                        <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                            {searchQuery || selectedSources.length > 0 || dateRange !== 'all'
+                                ? 'No articles match your current filters. Try adjusting your search criteria.'
+                                : 'No recent pharmaceutical news available at the moment.'}
+                        </p>
+                    </div>
+                ) : (
+                    <>
+                        {/* News Cards Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                            {currentArticles.map((article, index) => (
+                                <NewsCard
+                                    key={article.id}
+                                    article={article}
+                                    index={index}
+                                    isArticleSaved={isArticleSaved}
+                                    toggleSaveArticle={toggleSaveArticle}
+                                    shareArticle={shareArticle}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <NewsPagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                articlesPerPage={articlesPerPage}
+                                setArticlesPerPage={handleArticlesPerPageChange}
+                                totalArticles={filteredNews.length}
+                                onPageChange={handlePageChange}
+                            />
+                        )}
+                    </>
+                )}
+
+                {/* Saved Articles Section */}
+                {savedArticles.length > 0 && (
+                    <section className="mt-16">
+                        <h2 className="text-2xl sm:text-3xl font-bold mb-8 flex items-center gap-2">
+                            <Bookmark className="text-yellow-500 w-6 h-6" />
+                            <span>Saved Articles ({savedArticles.length})</span>
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {savedArticles.map((article) => (
+                                <div
+                                    key={`saved-${article.id}`}
+                                    className="bg-white rounded-xl p-4 shadow-md border-l-4 border-yellow-400 hover:shadow-lg transition-shadow"
+                                >
+                                    <h4 className="font-semibold text-sm mb-2 line-clamp-2">{article.title}</h4>
+                                    <div className="flex items-center justify-between text-xs text-gray-500">
+                                        <span className="truncate mr-2">{article.source?.name}</span>
+                                        <div className="flex items-center gap-2 flex-shrink-0">
+                                            <span className="hidden sm:inline">Saved {formatDate(article.savedAt)}</span>
+                                            <button
+                                                onClick={() => toggleSaveArticle(article)}
+                                                className="text-red-500 hover:text-red-700 text-xs font-medium"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
             </div>
         </div>

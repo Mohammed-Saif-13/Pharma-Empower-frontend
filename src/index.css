@@ -1,8 +1,40 @@
 /* src/index.css */
 
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800;900&display=swap");
+
 @import "tailwindcss";
 
-/* Light Mode Variables (Default) - Required for bg-background, border-border, etc. */
+/* ============================================
+   FONT APPLICATION
+   ============================================ */
+
+/* Headings use Manrope */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Manrope", sans-serif;
+  font-weight: 700;
+}
+
+/* Body uses Inter */
+body {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+}
+
+/* Buttons use Manrope (stronger) */
+button {
+  font-family: "Manrope", sans-serif;
+  font-weight: 600;
+}
+
+/* ============================================
+   SHADCN THEME VARIABLES
+   ============================================ */
+
 :root {
   --background: 0 0% 100%;
   --foreground: 222.2 47.4% 11.2%;
@@ -18,7 +50,6 @@
   --card: 0 0% 100%;
   --card-foreground: 222.2 47.4% 11.2%;
 
-  /* Adjusted Primary to a strong Indigo/Blue for the Pharma theme */
   --primary: 240 5.9% 10%;
   --primary-foreground: 210 40% 98%;
 
@@ -36,7 +67,6 @@
   --radius: 0.5rem;
 }
 
-/* Dark Mode Variables */
 .dark {
   --background: 222.2 47.4% 11.2%;
   --foreground: 210 40% 98%;
@@ -68,14 +98,243 @@
 }
 
 @layer base {
-  /* This ensures the border utility uses the defined variable */
-  * {
-    @apply border-border;
-  }
-
   body {
-    /* These utility classes now correctly resolve to the variables above */
-    @apply bg-background text-foreground font-sans;
     font-feature-settings: "cv11" 1, "salt" 1;
+  }
+}
+
+/* ============================================
+   CUSTOM ANIMATIONS (Framer Motion Replacement)
+   ============================================ */
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide Up Animation */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide Down Animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale In Animation */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Marquee Animation (should already be there from earlier) */
+@keyframes marquee {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: inline-block;
+  animation: marquee 30s linear infinite;
+  white-space: nowrap;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Base hidden state for scroll animations */
+.animate-on-scroll {
+  opacity: 0;
+}
+
+/* Fade In */
+.fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Slide Up */
+.slide-up {
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+/* Slide Down */
+.slide-down {
+  animation: slideDown 0.5s ease-out forwards;
+}
+
+/* Scale In */
+.scale-in {
+  animation: scaleIn 0.5s ease-out forwards;
+}
+
+/* Continuous Rotation */
+.rotate-continuous {
+  animation: rotate 20s linear infinite;
+}
+
+/* Marquee Animation */
+.animate-marquee {
+  display: inline-block;
+  animation: marquee 30s linear infinite;
+  white-space: nowrap;
+}
+
+/* ============================================
+   STAGGER DELAYS (for multiple items)
+   ============================================ */
+
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+.stagger-5 {
+  animation-delay: 0.5s;
+}
+.stagger-6 {
+  animation-delay: 0.6s;
+}
+.stagger-7 {
+  animation-delay: 0.7s;
+}
+.stagger-8 {
+  animation-delay: 0.8s;
+}
+
+/* ============================================
+   HOVER EFFECTS (Simple & Clean)
+   ============================================ */
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus visible for accessibility */
+*:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Add this at the end of your index.css file */
+
+/* Slow continuous rotation for globe */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+*
+  ============================================
+  BLOB
+  ANIMATIONS
+  (for floating background elements)
+  ============================================
+  */
+  @keyframes
+  blob {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(20px, -20px) scale(1.1);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  75% {
+    transform: translate(20px, 20px) scale(1.05);
+  }
+}
+
+.animate-blob {
+  animation: blob 10s ease-in-out infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* ============================================
+   GRADIENT TEXT UTILITIES
+   ============================================ */
+
+.bg-clip-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* ============================================
+   BACKDROP BLUR SUPPORT
+   ============================================ */
+
+@supports (backdrop-filter: blur(0)) or (-webkit-backdrop-filter: blur(0)) {
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 }

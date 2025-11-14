@@ -1,5 +1,4 @@
 // src/constants/routes.js
-// Saare NavLink aur Route paths ko yahan define kiya gaya hai.
 
 export const ROUTES = [
   { path: "/", name: "Home", element: "Home.jsx" },
@@ -18,4 +17,5 @@ export const ROUTES = [
   { path: "/skill-board", name: "Skill Board", element: "SkillBoard.jsx" },
   { path: "/contact-us", name: "Contact Us", element: "ContactUs.jsx" },
   { path: "/login", name: "Login", element: "Login.jsx" },
+  { path: "/register", name: "Register", element: "Register.jsx" }, // NEW
 ];
